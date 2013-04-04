@@ -79,7 +79,8 @@ public class TwijServlet extends HttpServlet {
 				|| path.startsWith("/1.1/statuses/firehose")) {
 			streaming = true;
 			host = "stream.twitter.com";
-		} else if (path.startsWith("/1.1/user")) {
+		} else if (path.startsWith("/1.1/user")
+				&& !path.startsWith("/1.1/users")) {
 			streaming = true;
 			host = "userstream.twitter.com";
 		} else if (path.startsWith("/1.1/site")) {
