@@ -123,7 +123,7 @@ public class TwijServlet extends HttpServlet {
 			}
 		}
 		oauthRequest.setConnectionKeepAlive(streaming);
-		
+
 		return oauthRequest;
 	}
 
