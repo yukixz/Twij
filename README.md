@@ -20,7 +20,3 @@ Twitter API Proxy in Java
 - ConsumerSecret
 - AccessToken
 - AccessTokenSecret
-
-许可协议
-----
-MIT
