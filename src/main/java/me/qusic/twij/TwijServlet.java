@@ -116,10 +116,8 @@ public class TwijServlet extends HttpServlet {
 				Enumeration<String> enumeration = request.getParameterNames();
 				while (enumeration.hasMoreElements()) {
 					String name = enumeration.nextElement();
-					oauthRequest.addBodyParameter(
-							name,
-							new String(request.getParameter(name).getBytes(
-									"ISO-8859-1"), "UTF-8"));
+					oauthRequest.addBodyParameter(name,
+							request.getParameter(name));
 				}
 			}
 		}
