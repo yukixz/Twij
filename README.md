@@ -18,6 +18,13 @@ Twitter API Proxy in Java
 - Tweetbot for iOS
 - Tweetbot for Mac
 
+API 修改工具
+----
+ - Twitter for iOS 和 Tweetbot for iOS
+   <p>http://Qusic.me/Tweetbot-API</p>
+ - Twitter for Mac 和 Tweetbot for Mac
+   <p>http://Qusic.me/Twitter-API</p>
+
 使用方法
 ----
 
