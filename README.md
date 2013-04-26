@@ -2,14 +2,21 @@ Twij
 ====
 Twitter API Proxy in Java
 
-重要信息
+功能特色和已知问题
 ----
 
-- 完全支持 Twitter Rest API v1.1。
-- 配合 Tweetbot API 插件使用的所有功能正常。
-- 其它客户端暂时没有测试，如果无法使用请尝试 Twip。
-- 目前只支持单个用户。//哪个好心人来帮忙填一下这个坑？;)
-- 理论上支持 Streaming，不过因为容器的响应缓存限制我自己暂时没有真正成功。//哪个好心人来帮忙填一下这个坑？;)
+- 完全支持 Twitter Rest API v1.1
+- 支持 Streaming API（受容器条件限制，已在 Google App Engine 测试成功。）
+- 支持 multipart/form-data 格式的 POST 请求（从根本上解决 Tweetbot 不能关注和收藏的问题。）
+- 目前暂时只支持单个用户
+
+已确认可用的客户端
+----
+
+- Twitter for iOS
+- Twitter for Mac
+- Tweetbot for iOS
+- Tweetbot for Mac
 
 使用方法
 ----
