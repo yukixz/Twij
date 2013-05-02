@@ -1,8 +1,9 @@
 package me.qusic.twij;
 
-import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -37,15 +38,13 @@ public class TwijServlet extends HttpServlet {
 		String consumerSecret = environment.get("ConsumerSecret");
 		String accessToken = environment.get("AccessToken");
 		String accessTokenSecret = environment.get("AccessTokenSecret");
-		this.service = new ServiceBuilder().provider(TwitterApi.class)
-				.apiKey(consumerKey).apiSecret(consumerSecret).build();
+		this.service = new ServiceBuilder().provider(TwitterApi.class).apiKey(consumerKey).apiSecret(consumerSecret).build();
 		this.accessToken = new Token(accessToken, accessTokenSecret);
 		this.logs = new ArrayList<String>();
 	}
 
 	@Override
-	protected void doGet(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		if (twij(request, response)) {
 			return;
 		} else {
@@ -54,8 +53,7 @@ public class TwijServlet extends HttpServlet {
 	}
 
 	@Override
-	protected void doPost(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		if (twij(request, response)) {
 			return;
 		} else {
@@ -63,24 +61,19 @@ public class TwijServlet extends HttpServlet {
 		}
 	}
 
-	private OAuthRequest generateRequest(HttpServletRequest request)
-			throws IOException {
+	private OAuthRequest generateRequest(HttpServletRequest request) throws IOException {
 		String url;
 		boolean streaming;
 		String method = request.getMethod();
-		String contentType = request.getHeader("Content-Type");
-		boolean includesQuery = !(method.equals("POST") && (contentType == null || contentType
-				.equals("application/x-www-form-urlencoded")));
+		String contentType = request.getContentType();
+		boolean includesQuery = !(method.equals("POST") && (contentType == null || contentType.equals("application/x-www-form-urlencoded")));
 
 		String host = "api.twitter.com";
 		String path = request.getPathInfo();
-		if (path.startsWith("/1.1/statuses/filter")
-				|| path.startsWith("/1.1/statuses/sample")
-				|| path.startsWith("/1.1/statuses/firehose")) {
+		if (path.startsWith("/1.1/statuses/filter") || path.startsWith("/1.1/statuses/sample") || path.startsWith("/1.1/statuses/firehose")) {
 			streaming = true;
 			host = "stream.twitter.com";
-		} else if (path.startsWith("/1.1/user")
-				&& !path.startsWith("/1.1/users")) {
+		} else if (path.startsWith("/1.1/user") && !path.startsWith("/1.1/users")) {
 			streaming = true;
 			host = "userstream.twitter.com";
 		} else if (path.startsWith("/1.1/site")) {
@@ -101,14 +94,16 @@ public class TwijServlet extends HttpServlet {
 		} else if (method.equals("POST")) {
 			oauthRequest = new OAuthRequest(Verb.POST, url);
 			if (includesQuery) {
-				BufferedReader reader = request.getReader();
-				StringBuilder sb = new StringBuilder();
-				int c;
-				while ((c = reader.read()) != -1) {
-					sb.append((char) c);
+				InputStream in = request.getInputStream();
+				ByteArrayOutputStream out = new ByteArrayOutputStream();
+				byte[] buffer = new byte[1024];
+				int count = 0;
+				while ((count = in.read(buffer)) != -1) {
+					out.write(buffer, 0, count);
 				}
-				reader.close();
-				String body = sb.toString();
+				byte[] body = out.toByteArray();
+				in.close();
+				out.close();
 				oauthRequest.addPayload(body);
 				oauthRequest.addHeader("Content-Type", contentType);
 			} else {
@@ -116,8 +111,7 @@ public class TwijServlet extends HttpServlet {
 				Enumeration<String> enumeration = request.getParameterNames();
 				while (enumeration.hasMoreElements()) {
 					String name = enumeration.nextElement();
-					oauthRequest.addBodyParameter(name,
-							request.getParameter(name));
+					oauthRequest.addBodyParameter(name, request.getParameter(name));
 				}
 			}
 		}
@@ -126,8 +120,7 @@ public class TwijServlet extends HttpServlet {
 		return oauthRequest;
 	}
 
-	private void processRequest(OAuthRequest oauthRequest,
-			HttpServletResponse response) throws IOException {
+	private void processRequest(OAuthRequest oauthRequest, HttpServletResponse response) throws IOException {
 		service.signRequest(accessToken, oauthRequest);
 		Response oauthResponse = oauthRequest.send();
 
@@ -135,20 +128,18 @@ public class TwijServlet extends HttpServlet {
 		response.setStatus(oauthResponse.getCode());
 		response.setBufferSize(0);
 
-		InputStreamReader reader = new InputStreamReader(
-				oauthResponse.getStream());
-		PrintWriter writer = response.getWriter();
-		char[] buffer = new char[10240];
-		int charsRead;
-		while ((charsRead = reader.read(buffer)) != -1) {
-			writer.print(new String(buffer, 0, charsRead));
+		InputStream in = oauthResponse.getStream();
+		OutputStream out = response.getOutputStream();
+		byte[] buffer = new byte[1024];
+		int count = 0;
+		while ((count = in.read(buffer)) != -1) {
+			out.write(buffer, 0, count);
 		}
-		reader.close();
-		writer.close();
+		in.close();
+		out.close();
 	}
 
-	private boolean twij(HttpServletRequest request,
-			HttpServletResponse response) throws IOException {
+	private boolean twij(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		String path = request.getPathInfo();
 		if (path.equals("/")) {
 			response.sendRedirect("http://www.google.com/ncr");
