@@ -63,25 +63,12 @@ public class TwijServlet extends HttpServlet {
 
     private OAuthRequest generateRequest(HttpServletRequest request) throws IOException {
         String url;
-        boolean streaming;
         String method = request.getMethod();
         String contentType = request.getContentType();
         boolean includesQuery = !(method.equals("POST") && (contentType == null || contentType.equals("application/x-www-form-urlencoded")));
 
         String host = "api.twitter.com";
         String path = request.getPathInfo();
-        if (path.startsWith("/1.1/statuses/filter") || path.startsWith("/1.1/statuses/sample") || path.startsWith("/1.1/statuses/firehose")) {
-            streaming = true;
-            host = "stream.twitter.com";
-        } else if (path.startsWith("/1.1/user") && !path.startsWith("/1.1/users")) {
-            streaming = true;
-            host = "userstream.twitter.com";
-        } else if (path.startsWith("/1.1/site")) {
-            streaming = true;
-            host = "sitestream.twitter.com";
-        } else {
-            streaming = false;
-        }
         url = "https://" + host + path;
         String query = request.getQueryString();
         if (includesQuery && query != null) {
@@ -115,7 +102,6 @@ public class TwijServlet extends HttpServlet {
                 }
             }
         }
-        oauthRequest.setConnectionKeepAlive(streaming);
 
         return oauthRequest;
     }
@@ -152,6 +138,14 @@ public class TwijServlet extends HttpServlet {
                 writer.println(log);
             }
             writer.close();
+            return true;
+        } else if (path.startsWith("/1.1/statuses/filter") ||
+                path.startsWith("/1.1/statuses/sample") ||
+                path.startsWith("/1.1/statuses/firehose") ||
+                (path.startsWith("/1.1/user") &&
+                    !path.startsWith("/1.1/users")) ||
+                path.startsWith("/1.1/site")) {
+            response.setStatus(502);
             return true;
         } else {
             return false;

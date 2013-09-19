@@ -6,9 +6,9 @@ Twitter API Proxy in Java
 ----
 
 - 完全支持 Twitter Rest API v1.1
-- 支持 Streaming API
 - 支持 POST statuses/update_with_media 即官方图床的图片上传
 - 支持 multipart/form-data 格式的 POST 请求（从根本上解决 Tweetbot 不能关注和收藏的问题。）
+- 不支持 Streaming API （GAE 不支持长连接）
 - 目前暂时只支持单个用户
 
 已确认可用的客户端
