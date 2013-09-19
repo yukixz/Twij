@@ -1,15 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <appengine-web-app xmlns="http://appengine.google.com/ns/1.0">
 
-	<application>这里填AppID</application>
-	<version>1</version>
-	<threadsafe>true</threadsafe>
+    <application>这里填AppID</application>
+    <version>1</version>
+    <threadsafe>true</threadsafe>
 
-	<env-variables>
-		<env-var name="ConsumerKey" value="这里填ConsumerKey" />
-		<env-var name="ConsumerSecret" value="这里填ConsumerSecret" />
-		<env-var name="AccessToken" value="这里填AccessToken" />
-		<env-var name="AccessTokenSecret" value="这里填AccessTokenSecret" />
-	</env-variables>
+    <env-variables>
+        <!-- Offical Key -->
+        <env-var name="ConsumerKey"
+                value="这里填ConsumerKey" />
+        <env-var name="ConsumerSecret"
+                value="这里填ConsumerSecret" />
+        <env-var name="AccessToken"
+                value="这里填AccessToken" />
+        <env-var name="AccessTokenSecret"
+                value="这里填AccessTokenSecret" />
+
+        <!-- Custom Key -->
+        <env-var name="ConsumerKey_VIA"
+                value="这里填ConsumerKey_VIA" />
+        <env-var name="ConsumerSecret_VIA"
+                value="这里填ConsumerSecret_VIA" />
+        <env-var name="AccessToken_VIA"
+                value="这里填AccessToken_VIA" />
+        <env-var name="AccessTokenSecret_VIA"
+                value="这里填AccessTokenSecret_VIA" />
+    </env-variables>
 
 </appengine-web-app>

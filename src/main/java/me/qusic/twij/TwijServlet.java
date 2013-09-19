@@ -27,19 +27,12 @@ public class TwijServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
-    private final OAuthService service;
-    private final Token accessToken;
+    private OAuthService service;
+    private Token accessToken;
 
     private final List<String> logs;
 
     {
-        Map<String, String> environment = System.getenv();
-        String consumerKey = environment.get("ConsumerKey");
-        String consumerSecret = environment.get("ConsumerSecret");
-        String accessToken = environment.get("AccessToken");
-        String accessTokenSecret = environment.get("AccessTokenSecret");
-        this.service = new ServiceBuilder().provider(TwitterApi.class).apiKey(consumerKey).apiSecret(consumerSecret).build();
-        this.accessToken = new Token(accessToken, accessTokenSecret);
         this.logs = new ArrayList<String>();
     }
 
@@ -127,10 +120,14 @@ public class TwijServlet extends HttpServlet {
 
     private boolean twij(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String path = request.getPathInfo();
+        Map<String, String> environment = System.getenv();
+        String consumerKey, consumerSecret, accessToken, accessTokenSecret;
+
         if (path.equals("/")) {
             response.sendRedirect("http://www.google.com/ncr");
             return true;
-        } else if (path.equals("/logs")) {
+        }
+        if (path.equals("/logs")) {
             response.setContentType("text/plain");
             response.setStatus(200);
             PrintWriter writer = response.getWriter();
@@ -139,16 +136,29 @@ public class TwijServlet extends HttpServlet {
             }
             writer.close();
             return true;
-        } else if (path.startsWith("/1.1/statuses/filter") ||
-                path.startsWith("/1.1/statuses/sample") ||
-                path.startsWith("/1.1/statuses/firehose") ||
-                (path.startsWith("/1.1/user") &&
-                    !path.startsWith("/1.1/users")) ||
-                path.startsWith("/1.1/site")) {
+        }
+        if (path.startsWith("/1.1/statuses/filter.json") ||
+                path.startsWith("/1.1/statuses/sample.json") ||
+                path.startsWith("/1.1/statuses/firehose.json") ||
+                path.startsWith("/1.1/user.json") ||
+                path.startsWith("/1.1/site.json")) {
             response.setStatus(502);
             return true;
-        } else {
-            return false;
         }
+
+        if (path.startsWith("/1.1/statuses/update.json")) {
+            consumerKey = environment.get("ConsumerKey_VIA");
+            consumerSecret = environment.get("ConsumerSecret_VIA");
+            accessToken = environment.get("AccessToken_VIA");
+            accessTokenSecret = environment.get("AccessTokenSecret_VIA");
+        } else {
+            consumerKey = environment.get("ConsumerKey");
+            consumerSecret = environment.get("ConsumerSecret");
+            accessToken = environment.get("AccessToken");
+            accessTokenSecret = environment.get("AccessTokenSecret");
+        }
+        this.service = new ServiceBuilder().provider(TwitterApi.class).apiKey(consumerKey).apiSecret(consumerSecret).build();
+        this.accessToken = new Token(accessToken, accessTokenSecret);
+        return false;
     }
 }
