@@ -119,6 +119,7 @@ public class TwijServlet extends HttpServlet {
     }
 
     private boolean twij(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String method = request.getMethod();
         String path = request.getPathInfo();
         Map<String, String> environment = System.getenv();
         String consumerKey, consumerSecret, accessToken, accessTokenSecret;
@@ -146,7 +147,7 @@ public class TwijServlet extends HttpServlet {
             return true;
         }
 
-        if (path.startsWith("/1.1/statuses/update.json")) {
+        if (method.equals("POST")) {
             consumerKey = environment.get("ConsumerKey_VIA");
             consumerSecret = environment.get("ConsumerSecret_VIA");
             accessToken = environment.get("AccessToken_VIA");
